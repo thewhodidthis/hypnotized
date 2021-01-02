@@ -26,13 +26,12 @@
     "shader.js"
   ],
   "scripts": {
-    "prebuild": "mkdir -p public; rsync -r static/ public --delete --exclude=.git*",
+    "prebuild": "mkdir -p public; cp -r static/* public/",
     "build": "npm run build:js && npm run build:css && npm run build:html",
     "postbuild": "terser -cmo public/service-worker.js service-worker.js",
     "build:css": "postcss -o public/index.css index.css",
     "build:html": "mustache package.json index.mustache.php | php | tidy -w 0 -o public/index.html",
     "build:js": "rollup -c -f iife client.js | buble | terser -cmo public/index.js",
-    "forever": "forever -a --uid 014-hypnotized start server.js",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:css": "stylelint *.css",
     "lint:js": "eslint *.js",
