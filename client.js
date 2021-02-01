@@ -1,8 +1,8 @@
 import createLoop from '@thewhodidthis/animation'
 import { cubic as ease } from '@thewhodidthis/ease'
 import fullscream from 'fullscream'
-import { add, websocketAddressFrom } from './helper'
-import createPicture from './painter'
+import { add, websocketAddressFrom } from './helper.js'
+import createPicture from './painter.js'
 
 const $figure = document.getElementById('figure')
 
