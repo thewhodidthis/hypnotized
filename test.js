@@ -1,5 +1,5 @@
 import 'cutaway'
-import { assert, report } from 'tapeless'
+import { assert, report } from 'tapeless/browser'
 import createPicture from './painter'
 
 const { ok } = assert
