@@ -1,19 +1,21 @@
 'use strict'
 
-const { existsSync, readFileSync } = require('fs')
+const { readFileSync } = require('fs')
+const path = require('path')
 const https = require('https')
 const { Server } = require('ws')
-
-const { cert, key } = require('./config.json')
 
 const port = process.env.PORT || process.env.npm_package_config_port || 8014
 const options = { path: '/io' }
 
-if (existsSync(cert) && existsSync(key)) {
+try {
+  const config = readFileSync(path.resolve(__dirname, './config.json'))
+  const { cert, key } = JSON.parse(config)
+
   options.server = https
     .createServer({ cert: readFileSync(cert), key: readFileSync(key) })
     .listen(port)
-} else {
+} catch (_) {
   options.port = port
 }
 
