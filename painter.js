@@ -7,15 +7,12 @@ import {
   WebGLRenderer
 } from 'three'
 
-import { fragmentShader, vertexShader } from './shader'
+import { fragmentShader, vertexShader } from './shader.js'
 
 const createPicture = (canvas, cutoff) => {
   const { width, height } = canvas
 
   const renderer = new WebGLRenderer({ canvas, antialias: true, devicePixelRatio: 1 })
-
-  // https://github.com/mrdoob/three.js/issues/9716
-  renderer.context.getShaderInfoLog = () => ''
 
   renderer.setClearColor(0x000000, 1)
   renderer.setSize(width, height)
