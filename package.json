@@ -62,7 +62,7 @@
     }
   },
   "dependencies": {
-    "three": "^0.125.2",
+    "three": "^0.115.0",
     "ws": "^7.4.2"
   },
   "devDependencies": {
