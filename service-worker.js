@@ -29,6 +29,11 @@ self.addEventListener('activate', (e) => {
 })
 
 self.addEventListener('fetch', (e) => {
+  // Skip SSE endpoint
+  if (e.request.url.includes('/io')) {
+    return
+  }
+
   const action = caches.match(e.request).then((response) => {
     if (response) {
       return response
