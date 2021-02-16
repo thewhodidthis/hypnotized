@@ -18,8 +18,9 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="icon" href="favicon.png">
+    <link rel="preload" href="index.css" as="style">
+    <link rel="stylesheet" href="index.css">
     <script src="index.js" defer></script>
-    <style><?php readfile('public/index.css'); ?></style>
   </head>
   <body>
     <figure>
@@ -50,12 +51,12 @@
           <p>Going through this animation from start to finish becomes somewhat less of a struggle as visits coverge in duration.</p>
         </blockquote>
         <ul>
-          {{#repository}}
-            <li><a href="{{url}}" title="Browse source code">Git log</a></li>
-          {{/repository}}
-          {{#author}}
-            <li><a href="{{url}}" title="Visit author homepage">More &rarr;</a></li>
-          {{/author}}
+        {{#repository}}
+          <li><a href="{{url}}" title="Browse source code">Git log</a></li>
+        {{/repository}}
+        {{#author}}
+          <li><a href="{{url}}" title="Visit author homepage">More &rarr;</a></li>
+        {{/author}}
         </ul>
         <footer>
           <p>
