@@ -30,7 +30,7 @@
     "build": "npm run build:js && npm run build:css && npm run build:html",
     "postbuild": "terser -cmo public/service-worker.js service-worker.js",
     "build:css": "postcss -o public/index.css index.css",
-    "build:html": "mustache package.json index.mustache.php | php | tidy -w 0 -o public/index.html",
+    "build:html": "mustache package.json index.mustache public/index.html",
     "build:js": "rollup -c -f iife client.js | terser -cmo public/index.js",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:css": "stylelint *.css",
