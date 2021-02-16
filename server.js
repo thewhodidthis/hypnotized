@@ -1,47 +1,70 @@
 'use strict'
 
 const { readFileSync } = require('fs')
-const path = require('path')
 const https = require('https')
-const { Server } = require('ws')
+
+const { cert, key } = require('./config.json')
 
 const port = process.env.PORT || process.env.npm_package_config_port || 8014
-const options = { path: '/io' }
+const connections = new Map()
 
-try {
-  const config = readFileSync(path.resolve(__dirname, './config.json'))
-  const { cert, key } = JSON.parse(config)
+const max = process.env.MAX || 1000
+const history = []
 
-  options.server = https
-    .createServer({ cert: readFileSync(cert), key: readFileSync(key) })
-    .listen(port)
-} catch (_) {
-  options.port = port
-}
-
-const io = new Server(options)
-
-const bumps = []
-const maxEntries = process.env.MAX || 1000
-
-let currentHistoryIndex = -1
-
-io.on('connection', (socket) => {
-  const visitStartTime = Date.now()
-
-  socket.send(JSON.stringify({ bumps }))
-  socket
-    .on('error', console.error)
-    .on('close', () => {
-      const visitDuration = Date.now() - visitStartTime
-
-      bumps.splice(currentHistoryIndex, 1, visitDuration)
-
-      io.clients.forEach((client) => {
-        client.send(JSON.stringify({ bumps }))
-      })
-    })
-
-  currentHistoryIndex += 1
-  currentHistoryIndex %= maxEntries
+const server = https.createServer({
+  cert: readFileSync(cert),
+  key: readFileSync(key)
 })
+
+let index = -1
+
+server
+  .on('request', (request, response) => {
+    const { headers, socket, url } = request
+    const { accept, origin = '' } = headers
+
+    if (accept === 'text/event-stream' && url === '/io') {
+      // Because http static serving is separately hosted
+      if (/(localhost|thewhodidthis)/.test(origin)) {
+        response.setHeader('Access-Control-Allow-Origin', origin)
+      }
+
+      // Set up connection
+      response.writeHead(200, {
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Content-Type': 'text/event-stream'
+      })
+
+      // Give out past durations
+      response.write(`data: ${JSON.stringify(history)}\n\n`)
+
+      // Keep track of open links
+      connections.set(socket, response)
+
+      // Start timing
+      const startTime = Date.now()
+
+      // Handle disconnect
+      request.on('close', () => {
+        // Drop connection from client list
+        connections.delete(socket)
+
+        // Stop timing
+        const endTime = Date.now()
+
+        // Save in history
+        history.splice(index, 1, endTime - startTime)
+
+        // Tell any others
+        connections.forEach((r) => {
+          r.write(`data: ${JSON.stringify(history)}\n\n`)
+        })
+      })
+
+      // Update current history index within bounds
+      index += 1
+      index %= max
+    }
+  })
+  .listen(port)
