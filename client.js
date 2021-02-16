@@ -1,7 +1,7 @@
 import createLoop from '@thewhodidthis/animation'
 import { cubic as ease } from '@thewhodidthis/ease'
 import fullscream from 'fullscream'
-import { add, websocketAddressFrom } from './helper.js'
+import { add, resolveLocalAddress } from './helper.js'
 import createPicture from './painter.js'
 
 const $figure = document.getElementById('figure')
@@ -21,7 +21,6 @@ let turns = 0
 const $canvas = document.getElementById('canvas')
 
 const { renderer, camera, scene } = createPicture($canvas, totalFrames)
-
 const { play, stop } = createLoop((_, frame) => {
   if (turns !== 0) {
     turns += turns > 0 ? -1 : 1
@@ -48,11 +47,10 @@ const { play, stop } = createLoop((_, frame) => {
   renderer.render(scene, camera)
 })
 
-const io = new WebSocket(`${websocketAddressFrom('http://localhost:8014')}/io`)
+const io = new EventSource(`${resolveLocalAddress('https://localhost:8014')}/io`)
 
 io.addEventListener('message', ({ data }) => {
-  const { bumps: input } = JSON.parse(data)
-
+  const input = JSON.parse(data)
   const notch = Math.max(...input) || 100
   const ratio = notch * 0.01
 
@@ -89,11 +87,11 @@ if (window !== window.top) {
 }
 
 window.addEventListener('load', () => {
+  $html.classList.remove('is-waiting')
+
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js').catch(console.log)
   }
-
-  $html.classList.remove('is-waiting')
 
   play()
 })
