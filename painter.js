@@ -23,7 +23,7 @@ const createPicture = (canvas, cutoff) => {
 
   scene.add(camera)
 
-  const geometry = new TorusKnotGeometry(5, 10, 2000, 5, 200, 0)
+  const geometry = new TorusKnotGeometry(5, 15, 2000, 5, 20, 0)
   const material = new ShaderMaterial({
     fragmentShader,
     vertexShader,

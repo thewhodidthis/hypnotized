@@ -28,16 +28,16 @@
   "scripts": {
     "prebuild": "mkdir -p public; cp -rp static/* public/",
     "build": "npm run build:js && npm run build:css && npm run build:html",
-    "postbuild": "terser -cmo public/service-worker.js service-worker.js",
+    "postbuild": "esbuild service-worker.js --bundle --minify --outdir=public",
     "build:css": "postcss -o public/index.css index.css",
     "build:html": "mustache package.json index.mustache public/index.html",
-    "build:js": "rollup -c -f iife client.js | terser -cmo public/index.js",
+    "build:js": "esbuild client.js --bundle --minify --outfile=public/index.js",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:css": "stylelint *.css",
     "lint:js": "eslint *.js",
     "start": "NODE_ENV=development node server",
-    "test": "rollup -c -f iife test.js | kpow",
-    "watch": "rollup -w -c -f iife client.js -o public/index.js"
+    "test": "esbuild test.js --bundle | kpow",
+    "watch": "npm run build:js -- --watch"
   },
   "config": {
     "date": "2012-21",
@@ -62,17 +62,16 @@
     }
   },
   "dependencies": {
-    "three": "^0.115.0"
+    "three": "^0.126.0"
   },
   "devDependencies": {
-    "@rollup/plugin-alias": "^3.1.2",
-    "@rollup/plugin-node-resolve": "^11.1.1",
     "@thewhodidthis/animation": "^0.1.22",
     "@thewhodidthis/ease": "^1.0.17",
     "@thewhodidthis/eslint-config": "^0.1.7",
     "@thewhodidthis/reset.css": "^0.0.19",
     "cssnano": "^4.1.10",
     "cutaway": "^0.0.11",
+    "esbuild": "^0.9.0",
     "eslint": "^7.19.0",
     "fullscream": "^1.0.14",
     "kpow": "^0.1.8",
@@ -80,11 +79,9 @@
     "postcss": "^8.2.4",
     "postcss-cli": "^8.3.1",
     "postcss-preset-env": "^6.7.0",
-    "rollup": "^2.38.3",
     "stylelint": "^13.9.0",
     "stylelint-config-standard": "^20.0.0",
-    "tapeless": "^1.0.3",
-    "terser": "^5.5.1"
+    "tapeless": "^1.0.3"
   },
   "engines": {
     "node": ">=6.11.0",
